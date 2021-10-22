@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+<meta property="og:type" content="website">
+<meta property="og:title" content="爱旅行的攻城狮">
+<meta property="og:url" content="https://chinagoldline.github.io/page/2/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="Java,web,redis,安全,devops">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/314503.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="棋逢对手 将遇良才 青梅竹马 共度白首">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/08/17/%E8%81%8A%E8%81%8A%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%EF%BC%88Cache-Control%E3%80%81max-age%E5%92%8CExpires%E3%80%81Etag%E5%92%8CLast-Modified%EF%BC%89-liao-liao-liu-lan-qi-huan-cun-cache-controlmax-age-he-expiresetag-he-last-modified/" target="_self">
+          聊聊浏览器缓存（Cache-Control、max-age和Expires、Etag和Last-Modified）
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/08/17/%E8%81%8A%E8%81%8A%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%EF%BC%88Cache-Control%E3%80%81max-age%E5%92%8CExpires%E3%80%81Etag%E5%92%8CLast-Modified%EF%BC%89-liao-liao-liu-lan-qi-huan-cun-cache-controlmax-age-he-expiresetag-he-last-modified/" target="_self">
+          
+          
+            
+          
+          基本概念缓存存储1234567Pragma : no-cache  http1.0时期的属性  为了兼容会使用Expires：0  http1.0时期的属性 Cache-Control  http1.1 中加入的新属性，它有以下常用参数：   Public/Private 私有缓存/共有缓存   no-cache：不建议使用本地缓存，但仍然会缓存到本地   no-store：不会在客户端缓存任何数
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-08-17 21:32" pubdate>
+              2021-08-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E7%BC%93%E5%AD%98/">web缓存</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/07/24/Linux%E9%80%9A%E8%BF%87%E5%AE%89%E8%A3%85davfs2%E6%9D%A5%E6%8C%82%E8%BD%BDwebdav%E7%BD%91%E7%9B%98-linux-tong-guo-an-zhuang-davfs2-lai-gua-zai-webdav-wang-pan/" target="_self">
+          Linux通过安装davfs2来挂载webdav网盘
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/07/24/Linux%E9%80%9A%E8%BF%87%E5%AE%89%E8%A3%85davfs2%E6%9D%A5%E6%8C%82%E8%BD%BDwebdav%E7%BD%91%E7%9B%98-linux-tong-guo-an-zhuang-davfs2-lai-gua-zai-webdav-wang-pan/" target="_self">
+          
+          
+            
+          
+          1. 安装webdav站长使用的是Cloudreve云盘提供的Webdav能力，该云盘可以自己去官网下载安装即可，或者也可以自己搭建webdav服务
+2. 安装 fues 和 davfs21yum install fues davfs2
+3. 创建挂载目录1mkdir -p /mnt/webdav
+
+4. 挂载webdav1mount -t davfs http://www.baidu.com(自
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-07-24 11:19" pubdate>
+              2021-07-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/DevOps/">DevOps</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%BA%94%E7%94%A8%E8%BD%AF%E4%BB%B6/">应用软件</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/07/15/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E5%AE%89%E5%85%A8-%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E5%AE%89%E5%85%A8/" target="_self">
+          浅谈前后端分离项目文件访问安全
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/07/15/%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E5%AE%89%E5%85%A8-%E6%B5%85%E8%B0%88%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E5%AE%89%E5%85%A8/" target="_self">
+          
+          
+            
+          
+          写在前面传统项目中文件访问(如文件下载)请求一般采用GET+重定向的方式进行，但是前后端分离项目且采用自定义Token机制时，会出现一个问题。浏览器不会默认携带自己自定义的Header信息，自定义Header信息一般通过自己的拦截器(如AXIOS)或者工具类完成添加。但是如果采用传统的GET+重定向方式，此时就无法对用户的身份像使用Session那样进行自动校验。
+改造方案1. 文件下载类请求(样
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-07-15 20:37" pubdate>
+              2021-07-15
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%99%BD%E8%AF%9D%E5%AE%89%E5%85%A8/">白话安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AE%89%E5%85%A8/">web安全</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/25/Mysql%208.0%20%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-mysql80%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" target="_self">
+          Mysql 8.0 常见问题
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/25/Mysql%208.0%20%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-mysql80%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" target="_self">
+          
+          
+            
+          
+          1. 查找默认密码1cat /var/log/mysqld.log
+2. 开启远程访问12update user set host = &#x27;%&#x27; where user = &#x27;root&#x27;;FLUSH PRIVILEGES;
+此时root的host是所有都可以了。然后刷新修改，FLUSH PRIVILEGES;这步一定要做，否则无法生效。
+3. 远程连接mysql
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-25 21:58" pubdate>
+              2021-06-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/DevOps-%E5%B8%B8%E7%94%A8Tools/">DevOps | 常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%BA%94%E7%94%A8%E8%BD%AF%E4%BB%B6-%E5%B8%B8%E7%94%A8Tools/">应用软件 | 常用Tools</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/17/OpenJDK%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85-openjdk-xia-zai-yu-an-zhuang/" target="_self">
+          OpenJDK下载与安装
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/17/OpenJDK%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85-openjdk-xia-zai-yu-an-zhuang/" target="_self">
+          
+          
+            
+          
+          OpenJDK 下载地址http://jdk.java.net/java-se-ri/16
+下载需要版本的JDK
+注意事项此处下载的可以直接解压使用
+
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-17 22:49" pubdate>
+              2021-06-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/17/Tengine%E5%AE%89%E8%A3%85-tengine-an-zhuang/" target="_self">
+          Tengine安装
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/17/Tengine%E5%AE%89%E8%A3%85-tengine-an-zhuang/" target="_self">
+          
+          
+            
+          
+          准备工作1234Tengine 源码：http://tengine.taobao.org/download.htmlPcre源码：https://sourceforge.net/projects/pcre/files/pcre/8.35/pcre-8.35.tar.gz/download?use_mirror=nchcOpenSSL源码：https://www.openssl.org/source
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-17 20:58" pubdate>
+              2021-06-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/DevOps/">DevOps</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/nginx/">nginx</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/11/%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0Maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93-%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93%E7%9A%84%E5%8E%86%E7%A8%8B/" target="_self">
+          发布第一个开源项目到Maven中央仓库
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/11/%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0Maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93-%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93%E7%9A%84%E5%8E%86%E7%A8%8B/" target="_self">
+          
+          
+            
+          
+          写在前面最近想基于Spring Boot做个安全加固类的通用服务，方便团队的小伙伴按需使用。但是之前一直没有尝试过，所以就有了本文。
+发布准备
+
+
+内容
+备注
+
+
+
+GPG生成密钥工具
+https://gpg4win.org/download.html 在后续流程中下载安装生成密钥并上传置服务器
+
+
+工单系统
+https://issues.sonatype.org    负责申请上传资格及完成第一
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-11 20:44" pubdate>
+              2021-06-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/09/APP%E7%89%88%E6%9C%AC%E5%8F%B7%E5%AF%B9%E6%AF%94%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0_(Java%E7%89%88%E6%9C%AC)-ban-ben-hao-dui-bi-xiao-suan-fa/" target="_self">
+          APP版本号对比如何实现?(Java版本)
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/09/APP%E7%89%88%E6%9C%AC%E5%8F%B7%E5%AF%B9%E6%AF%94%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0_(Java%E7%89%88%E6%9C%AC)-ban-ben-hao-dui-bi-xiao-suan-fa/" target="_self">
+          
+          
+            
+          
+          写在前面在APP比较火热的年代，APP的后台管理系统经常会用到类似版本号对比的算法用来区分不同版本的消息推送等服务。虽然现在APP热度已下降很多，但是在迁移之际还是做一下相关demo的备份。
+版本号对比实现123456789101112131415161718192021222324      /** * 比较版本号的大小,前者大则返回一个正数,后者大返回一个负数,相等则返回0 * @param 
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-09 20:28" pubdate>
+              2021-06-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/09/Map%E6%8C%89Key%E6%88%96Value%E6%8E%92%E5%BA%8F-map-an-key-huo-value-pai-xu/" target="_self">
+          Map按Key或Value排序
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/09/Map%E6%8C%89Key%E6%88%96Value%E6%8E%92%E5%BA%8F-map-an-key-huo-value-pai-xu/" target="_self">
+          
+          
+            
+          
+          基础回顾Map是键值对的集合接口，它的实现类主要包括：HashMap,TreeMap,Hashtable以及LinkedHashMap等。TreeMap：基于红黑树（Red-Black tree）的 NavigableMap 实现，该映射根据其键的自然顺序进行排序，或者根据创建映射时提供的 Comparator 进行排序，具体取决于使用的构造方法。HashMap的值是没有顺序的，它是按照key的H
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-09 20:14" pubdate>
+              2021-06-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/08/%E8%81%8A%E8%81%8A%E9%89%B4%E6%9D%83%E4%B8%AD%E6%BD%9C%E5%9C%A8%E7%9A%84%E9%9A%90%E6%82%A3-liao-liao-jian-quan-zhong-qian-zai-de-yin-huan/" target="_self">
+          聊聊鉴权中潜在的隐患
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/06/08/%E8%81%8A%E8%81%8A%E9%89%B4%E6%9D%83%E4%B8%AD%E6%BD%9C%E5%9C%A8%E7%9A%84%E9%9A%90%E6%82%A3-liao-liao-jian-quan-zhong-qian-zai-de-yin-huan/" target="_self">
+          
+          
+            
+          
+          本文主要聊聊常见的鉴权缺陷，各位也可以集思广益，丰富案例场景。
+场景一 会话数据安全性一个系统安全的核心，应该在于用户会话的生成环节。我们保障的系统安全，应该是基于用户会话不存在密码或验证码泄露(或网络监听)场景下的，否则常规的用户鉴权无法保障其安全性。我们此处聊的主要是常见的隐患以及可能的安全应对方案。
+隐患一  用户会话可无认证生成在不需要用户输入密码或验证码的情况下，可以生成用户会话。例如，
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-08 21:34" pubdate>
+              2021-06-08
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%99%BD%E8%AF%9D%E5%AE%89%E5%85%A8/">白话安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/web%E5%AE%89%E5%85%A8/">web安全</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="写在前面最近想基于Spring Boot做个安全加固类的通用服务，方便团队的小伙伴按需使用。但是之前一直没有尝试过，所以就有了本文。 发布准备   内容 备注    GPG生成密钥工具 https:&#x2F;&#x2F;gpg4win.org&#x2F;download.html 在后续流程中下载安装生成密钥并上传置服务器   工单系统 https:&#x2F;&#x2F;issues.sonatype.org    负责申请上传资格及完成第一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发布第一个开源项目到Maven中央仓库">
+<meta property="og:url" content="https://chinagoldline.github.io/2021/06/11/%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0Maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93-%E5%8F%91%E5%B8%83%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%88%B0maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93%E7%9A%84%E5%8E%86%E7%A8%8B/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="写在前面最近想基于Spring Boot做个安全加固类的通用服务，方便团队的小伙伴按需使用。但是之前一直没有尝试过，所以就有了本文。 发布准备   内容 备注    GPG生成密钥工具 https:&#x2F;&#x2F;gpg4win.org&#x2F;download.html 在后续流程中下载安装生成密钥并上传置服务器   工单系统 https:&#x2F;&#x2F;issues.sonatype.org    负责申请上传资格及完成第一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.mycitymemory.com/upload/2021/06/20210611142225-163ed39e9ed54020804cfd5338550a18.jpg">
+<meta property="article:published_time" content="2021-06-11T12:44:05.000Z">
+<meta property="article:modified_time" content="2021-09-03T08:53:12.844Z">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="常用Tools">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.mycitymemory.com/upload/2021/06/20210611142225-163ed39e9ed54020804cfd5338550a18.jpg">
+  
+  <title>发布第一个开源项目到Maven中央仓库 - 爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="发布第一个开源项目到Maven中央仓库">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-11 20:44" pubdate>
+        2021年6月11日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      undefined 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      NaN 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">发布第一个开源项目到Maven中央仓库</h1>
+            
+            <div class="markdown-body">
+              <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>最近想基于Spring Boot做个安全加固类的通用服务，方便团队的小伙伴按需使用。但是之前一直没有尝试过，所以就有了本文。</p>
+<h1 id="发布准备"><a href="#发布准备" class="headerlink" title="发布准备"></a>发布准备</h1><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GPG生成密钥工具</td>
+<td><a target="_blank" rel="noopener" href="https://gpg4win.org/download.html">https://gpg4win.org/download.html</a> 在后续流程中下载安装生成密钥并上传置服务器</td>
+</tr>
+<tr>
+<td>工单系统</td>
+<td><a target="_blank" rel="noopener" href="https://issues.sonatype.org/">https://issues.sonatype.org</a>    负责申请上传资格及完成第一次上传，后续更新不需要使用</td>
+</tr>
+<tr>
+<td>个人域名</td>
+<td><a target="_blank" rel="noopener" href="http://demo.com/">http://demo.com</a> 这里主要用于工单资格验证(Add a TXT record to your DNS referencing this JIRA ticket: OSSRH-XXX (Fastest))</td>
+</tr>
+</tbody></table>
+<h1 id="申请步骤"><a href="#申请步骤" class="headerlink" title="申请步骤"></a>申请步骤</h1><h2 id="1-申请工单系统帐号"><a href="#1-申请工单系统帐号" class="headerlink" title="1.申请工单系统帐号"></a>1.申请工单系统帐号</h2><p>注册地址：<a target="_blank" rel="noopener" href="https://issues.sonatype.org/secure/Signup!default.jspa">https://issues.sonatype.org/secure/Signup!default.jspa</a></p>
+<h2 id="2-创建工单"><a href="#2-创建工单" class="headerlink" title="2.创建工单"></a>2.创建工单</h2><p><img src="https://www.mycitymemory.com/upload/2021/06/20210611142225-163ed39e9ed54020804cfd5338550a18.jpg" srcset="/img/loading.gif" lazyload alt="20210611142225.jpg"></p>
+<p>项目：Community Support - Open Source Project Repository Hosting<br>概要：发布Jar的名称<br>描述：非必填，最好描述清晰<br>Group Id：例如com.demo，主要和你的域名有关系，因为后续需要使用域名验证<br>Project URL：Github项目站点(<a target="_blank" rel="noopener" href="https://github.com/xxx/xxx-spring-boot-starter">https://github.com/xxx/xxx-spring-boot-starter</a>)<br>SCM url：源码仓库(<a target="_blank" rel="noopener" href="https://github.com/xxx/xxx-spring-boot-starter.git">https://github.com/xxx/xxx-spring-boot-starter.git</a>)<br>注：此处有代码库即可，上传是在本地deploy的，因此代码库可以后续再补充完善。</p>
+<h2 id="3-配合人工审核"><a href="#3-配合人工审核" class="headerlink" title="3.配合人工审核"></a>3.配合人工审核</h2><h3 id="3-1当创建完工单后，会收到信息反馈，示例如下："><a href="#3-1当创建完工单后，会收到信息反馈，示例如下：" class="headerlink" title="3.1当创建完工单后，会收到信息反馈，示例如下："></a>3.1当创建完工单后，会收到信息反馈，示例如下：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Do you own the domain sayrmb.com? If so, please verify ownership via one of the following methods:</span><br><span class="line"></span><br><span class="line">Add a TXT record to your DNS referencing <span class="keyword">this</span> JIRA ticket: OSSRH-<span class="number">69965</span> (Fastest)</span><br><span class="line"><span class="function">Setup a redirect to your Github <span class="title">page</span> <span class="params">(<span class="keyword">if</span> it does not already exist)</span></span></span><br><span class="line"><span class="function">You can find more information here: https:<span class="comment">//central.sonatype.org/publish/</span></span></span><br><span class="line"><span class="function">If you <span class="keyword">do</span> not own <span class="keyword">this</span> domain, please read:</span></span><br><span class="line"><span class="function">https:<span class="comment">//central.sonatype.org/publish/requirements/coordinates/</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">You may also choose a Group ID that reflects your project hosting, in <span class="keyword">this</span> <span class="keyword">case</span>, something like</span></span><br><span class="line"><span class="function">com.github Group IDs are invalid now but io.github may be used instead. Please read the following <span class="keyword">for</span> more info: https:<span class="comment">//central.sonatype.org/changelog/#2021-04-01-comgithub-is-not-supported-anymore-as-a-valid-coordinate</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">If you decide to change your Group ID, please edit <span class="keyword">this</span> ticket and update the Group ID field.</span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置域名验证签名"><a href="#3-2-配置域名验证签名" class="headerlink" title="3.2 配置域名验证签名"></a>3.2 配置域名验证签名</h3><p>新建TXT记录，主机记录为：OSSRH-69965，记录值为：<br><a target="_blank" rel="noopener" href="https://issues.sonatype.org/browse/OSSRH-69965">https://issues.sonatype.org/browse/OSSRH-69965</a><br>注：此处改为自己的工单号</p>
+<h3 id="3-3-在域名验证截图，回复到问题下，人工审核会进行验证处理"><a href="#3-3-在域名验证截图，回复到问题下，人工审核会进行验证处理" class="headerlink" title="3.3 在域名验证截图，回复到问题下，人工审核会进行验证处理"></a>3.3 在域名验证截图，回复到问题下，人工审核会进行验证处理</h3><p>新建备注，备注信息如下：<br>I hava Add a TXT record use JIRA ticket: OSSRH-69965</p>
+<h3 id="3-4-验证通过后可以在对话页面看到消息，如下示例："><a href="#3-4-验证通过后可以在对话页面看到消息，如下示例：" class="headerlink" title="3.4 验证通过后可以在对话页面看到消息，如下示例："></a>3.4 验证通过后可以在对话页面看到消息，如下示例：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">com.demo has been prepared, <span class="function">now <span class="title">user</span><span class="params">(s)</span> xxx can:</span></span><br><span class="line"><span class="function">Publish snapshot and release artifacts to s01.oss.sonatype.org</span></span><br><span class="line"><span class="function">Have a look at <span class="keyword">this</span> section of our official guide <span class="keyword">for</span> deployment instructions:</span></span><br><span class="line"><span class="function">https:<span class="comment">//central.sonatype.org/publish/publish-guide/#deployment</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">Please comment on <span class="keyword">this</span> ticket when you&#x27;ve released your first <span class="title">component</span><span class="params">(s)</span>, so we can activate the sync to Maven Central.</span></span><br><span class="line"><span class="function">Depending on your build configuration, <span class="keyword">this</span> might happen automatically. If not, you can follow the steps in <span class="keyword">this</span> section of our guide:</span></span><br><span class="line"><span class="function">https:<span class="comment">//central.sonatype.org/publish/release/</span></span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></table></figure>
+<h3 id="3-5-执行发布JAR的动作，并等待同步消息"><a href="#3-5-执行发布JAR的动作，并等待同步消息" class="headerlink" title="3.5 执行发布JAR的动作，并等待同步消息"></a>3.5 执行发布JAR的动作，并等待同步消息</h3><p>示例消息如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Central sync is activated <span class="keyword">for</span> com.demo. After you successfully release, your component will be published to Central https:<span class="comment">//repo1.maven.org/maven2/, typically within 10 minutes, though updates to https://search.maven.org can take up to two hours.</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>注：10分钟左右在 <a target="_blank" rel="noopener" href="https://repo1.maven.org/maven2/">https://repo1.maven.org/maven2/</a> 可以找到<br>2小时左右可以在 <a target="_blank" rel="noopener" href="https://search.maven.org/">https://search.maven.org</a> 搜索到</p>
+<h2 id="4-安装Gpg生成密钥"><a href="#4-安装Gpg生成密钥" class="headerlink" title="4.安装Gpg生成密钥"></a>4.安装Gpg生成密钥</h2><p>下载完成后直接安装即可，比较傻瓜式安装很简单，安装后继续以下操作：</p>
+<ul>
+<li>文件&gt;新建密钥对(Ctrl+N) –&gt; 创建个人OpenPGP密钥对</li>
+<li>填写个人信息姓名和邮箱，勾选Protectx选项，并点击-&gt;新建</li>
+<li>填写密钥密码</li>
+<li>秘钥创建成功后，点击-&gt;将公钥上传到目录服务,如果上传失败，则通过：设置(S)-&gt;配置Kleopatra©，修改 OpenPGP密钥服务器为：hkp://keyserver.ubuntu.com:80<br>注：此操作大同小异，不同版本软件可能界面有些许差异。</li>
+</ul>
+<h2 id="5-配置Maven-Settings-xml"><a href="#5-配置Maven-Settings-xml" class="headerlink" title="5.配置Maven Settings.xml"></a>5.配置Maven Settings.xml</h2><p>Maven Settings.xml 配置，在servers中添加：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>sonatype-nexus-snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">username</span>&gt;</span>https://issues.sonatype.org的账号<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">password</span>&gt;</span>https://issues.sonatype.org的密码<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>sonatype-nexus-staging<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">username</span>&gt;</span>https://issues.sonatype.org的账号<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">password</span>&gt;</span>https://issues.sonatype.org的密码<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>ossrh<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">username</span>&gt;</span>https://issues.sonatype.org的账号<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">password</span>&gt;</span>https://issues.sonatype.org的密码<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> 密钥配置，在profile中添加ossrh</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>ossrh<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">gpg.executable</span>&gt;</span>D:/Program Files (x86)/GnuPG/bin/gpg.exe<span class="tag">&lt;/<span class="name">gpg.executable</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">gpg.passphrase</span>&gt;</span>上面生成的密钥密码：xxx<span class="tag">&lt;/<span class="name">gpg.passphrase</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">gpg.homedir</span>&gt;</span>&#123;找到dir：cmd-&gt;gpg --list-key&#125;C:/Users/xxx/AppData/Roaming/gnupg<span class="tag">&lt;/<span class="name">gpg.homedir</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>注：此处2个路径和1个密码均要替换为自己的真实数据，密码为Gpg密钥密码。</p>
+<h2 id="6-配置POM文件"><a href="#6-配置POM文件" class="headerlink" title="6.配置POM文件"></a>6.配置POM文件</h2><p>在pom文件里添加scm、licenses、developers、distributionManagement</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">licenses</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">license</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>The MIT License<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://opensource.org/licenses/mit-license.php<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">distribution</span>&gt;</span>repo<span class="tag">&lt;/<span class="name">distribution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">license</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">licenses</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">scm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://github.com/xxx/xxx-spring-boot-starter<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">connection</span>&gt;</span>https://github.com/xxx/xxx-spring-boot-starter.git<span class="tag">&lt;/<span class="name">connection</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">developerConnection</span>&gt;</span>https://github.com/xxx/xxx-spring-boot-starter<span class="tag">&lt;/<span class="name">developerConnection</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">scm</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">developers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">developer</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>xxx<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">email</span>&gt;</span>xxx@qq.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://github.com/xxx/xxx-spring-boot-starter<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">developer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">developers</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>ossrh<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://oss.sonatype.org/content/repositories/snapshots<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>配置编译发布信息build，gpg相关插件</p>
+<ul>
+<li>maven-source-plugin 用来生成Source Jar文件</li>
+<li>maven-javadoc-plugin 用来生成 javadoc 文档</li>
+<li>maven-gpg-plugin 用来对工程文件进行自动签名</li>
+<li>nexus-staging-maven-plugin 用来将工程发布到中央仓库，另外注意生成javadoc文档时需要指定关闭doclint，不然可能因为使用了不规范的javadoc注解而导致失败，完整配置如下<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 发布Jar到Maven仓库 Begin --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--生成Source jar文件--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-source-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-sources<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar-no-fork<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--生成Javadoc，关闭doclint,避免注解检查不通过--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-javadoc-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-javadocs<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">additionalparam</span>&gt;</span>-Xdoclint:none<span class="tag">&lt;/<span class="name">additionalparam</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--Maven GPG插件用于使用以下配置对组件进行签名--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-gpg-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">id</span>&gt;</span>sign-artifacts<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">phase</span>&gt;</span>verify<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>sign<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--Nexus Staging Maven插件是将组件部署到OSSRH并将其发布到Central Repository的推荐方法--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.sonatype.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>nexus-staging-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">extensions</span>&gt;</span>true<span class="tag">&lt;/<span class="name">extensions</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">serverId</span>&gt;</span>ossrh<span class="tag">&lt;/<span class="name">serverId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">nexusUrl</span>&gt;</span>https://s01.oss.sonatype.org/<span class="tag">&lt;/<span class="name">nexusUrl</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">autoReleaseAfterClose</span>&gt;</span>true<span class="tag">&lt;/<span class="name">autoReleaseAfterClose</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- release plugin,用于发布到release仓库部署插件 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-release-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="7-deploy项目"><a href="#7-deploy项目" class="headerlink" title="7.deploy项目"></a>7.deploy项目</h2></li>
+</ul>
+<p>在maven中选择deploy选项，即可发布自己的模块到maven中央仓库中。过程中会要求输入gpg密码进行二次确认。</p>
+<h2 id="8-扩展提示"><a href="#8-扩展提示" class="headerlink" title="8.扩展提示"></a>8.扩展提示</h2><p>当你的开源项目为多个模块时，只需要配置在parent模块就可以了，deploy可以直接发布parent模块，maven会自动把相关模块一并上传。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/06/17/Tengine%E5%AE%89%E8%A3%85-tengine-an-zhuang/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Tengine安装</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/09/APP%E7%89%88%E6%9C%AC%E5%8F%B7%E5%AF%B9%E6%AF%94%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0_(Java%E7%89%88%E6%9C%AC)-ban-ben-hao-dui-bi-xiao-suan-fa/">
+                        <span class="hidden-mobile">APP版本号对比如何实现?(Java版本)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

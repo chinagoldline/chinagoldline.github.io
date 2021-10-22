@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="写在前面由于Logstash内置了很多正则表达式，以至于很多人在使用的时候容易教条主义，死搬硬套，导致想用Logstash按照自定义格式解析时，网上基本上很难找到符合自己要求的grok表达式。但是grok正则表达式，底层就是按照普通的正则表达式进行数据匹配而已，此时你只要拥有拆分问题的思维，那么再复杂的格式，也可以通过拆分观念来拆解成自己想要的格式。 手写Grok,告别无效搜索下面将以一段格式复杂">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊Logstash的Grok正则匹配">
+<meta property="og:url" content="https://chinagoldline.github.io/2021/09/03/%E8%81%8A%E8%81%8ALogstash%E7%9A%84Grok%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D-liao-liao-logstash-de-grok-zheng-ze-pi-pei/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="写在前面由于Logstash内置了很多正则表达式，以至于很多人在使用的时候容易教条主义，死搬硬套，导致想用Logstash按照自定义格式解析时，网上基本上很难找到符合自己要求的grok表达式。但是grok正则表达式，底层就是按照普通的正则表达式进行数据匹配而已，此时你只要拥有拆分问题的思维，那么再复杂的格式，也可以通过拆分观念来拆解成自己想要的格式。 手写Grok,告别无效搜索下面将以一段格式复杂">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-03T12:10:51.000Z">
+<meta property="article:modified_time" content="2021-09-10T09:08:07.460Z">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="elastic">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>聊聊Logstash的Grok正则匹配 - 爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="聊聊Logstash的Grok正则匹配">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-09-03 20:10" pubdate>
+        2021年9月3日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      undefined 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      NaN 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">聊聊Logstash的Grok正则匹配</h1>
+            
+            <div class="markdown-body">
+              <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>由于Logstash内置了很多正则表达式，以至于很多人在使用的时候容易教条主义，死搬硬套，导致想用Logstash按照自定义格式解析时，网上基本上很难找到符合自己要求的grok表达式。<br>但是grok正则表达式，底层就是按照普通的正则表达式进行数据匹配而已，此时你只要拥有拆分问题的思维，那么再复杂的格式，也可以通过拆分观念来拆解成自己想要的格式。</p>
+<h2 id="手写Grok-告别无效搜索"><a href="#手写Grok-告别无效搜索" class="headerlink" title="手写Grok,告别无效搜索"></a>手写Grok,告别无效搜索</h2><p>下面将以一段格式复杂的Web中间件日志来进行拆解思路讲解分享。</p>
+<p><strong>1）样例日志</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">9</span>/<span class="number">3</span>/<span class="number">21</span> <span class="number">10</span>:<span class="number">26</span>:<span class="number">54</span>:<span class="number">274</span> CST] 0000005a SystemOut O <span class="number">2021</span>-09-<span class="number">03</span> <span class="number">10</span>:<span class="number">26</span>:<span class="number">54</span> [com.baidu.portal.utils.http.HttpUtil sendPostJson <span class="number">846</span>]-[INFO][RequestLog]-&#123;<span class="string">&quot;currentUser&quot;</span>:<span class="string">&quot;Default&quot;</span>,<span class="string">&quot;httpMethod&quot;</span>:<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;level&quot;</span>:<span class="string">&quot;sys-biz&quot;</span>,<span class="string">&quot;module&quot;</span>:<span class="string">&quot;Order&quot;</span>,<span class="string">&quot;reqInfo&quot;</span>:<span class="string">&quot;-&quot;</span>,<span class="string">&quot;reqSourceIp&quot;</span>:<span class="string">&quot;0:0:0:0:0:0:0:1&quot;</span>,<span class="string">&quot;reqTime&quot;</span>:<span class="string">&quot;2021-09-03 10:55:32&quot;</span>,<span class="string">&quot;reqUrl&quot;</span>:<span class="string">&quot;/data/queryByPage&quot;</span>,<span class="string">&quot;respInfo&quot;</span>:<span class="string">&quot;&#123;\&quot;code\&quot;:\&quot;200\&quot;,\&quot;data\&quot;:&#123;\&quot;optimizeCountSql\&quot;:true,\&quot;records\&quot;:[&#123;\&quot;serialNumber\&quot;:\&quot;wmh2021060710348585\&quot;,\&quot;businessTypes\&quot;:\&quot;7\&quot;,\&quot;id\&quot;:11177&#125;,&#123;\&quot;serialNumber\&quot;:\&quot;wmh2021060710349253\&quot;,\&quot;businessTypes\&quot;:\&quot;2\&quot;,\&quot;id\&quot;:11178&#125;,&#123;\&quot;serialNumber\&quot;:\&quot;wmh2021060710350107\&quot;,\&quot;businessTypes\&quot;:\&quot;5\&quot;,\&quot;id\&quot;:11179&#125;,&#123;\&quot;serialNumber\&quot;:\&quot;wmh2021060810348855\&quot;,\&quot;businessTypes\&quot;:\&quot;2\&quot;,\&quot;id\&quot;:11180&#125;,&#123;\&quot;serialNumber\&quot;:\&quot;wmh2021060810348954\&quot;,\&quot;businessTypes\&quot;:\&quot;5\&quot;,\&quot;id\&quot;:11181&#125;],\&quot;searchCount\&quot;:true,\&quot;total\&quot;:5,\&quot;current\&quot;:1,\&quot;size\&quot;:10,\&quot;orders\&quot;:[]&#125;,\&quot;message\&quot;:\&quot;success\&quot;&#125;&quot;</span>,<span class="string">&quot;respStatusCode&quot;</span>:<span class="number">200</span>,<span class="string">&quot;respTime&quot;</span>:<span class="string">&quot;2021-09-03 10:55:32&quot;</span>,<span class="string">&quot;tips&quot;</span>:<span class="string">&quot;分页查询订单&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>2）认识GREEDYDATA</strong><br>GREEDYDATA是Logstash内置的一个正则规则，大致意思就是他可以代表任意字符串，具体正则内容可以自行去了解。</p>
+<p><strong>3）Grok对特殊符号的处理</strong><br>此处需要特殊说明下，Grok对于特殊符号的匹配需要添加转义符，<br>例如,你想获取如下示例中的日期，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2021</span>-<span class="number">03</span>-<span class="number">21</span>] GET /index.html</span><br></pre></td></tr></table></figure>
+<p>grok得按照如下的方式来写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\[%&#123;GREEDYDATA:time&#125;\] %&#123;GREEDYDATA:metord&#125; %&#123;GREEDYDATA:path&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>4）拆解复杂日志</strong></p>
+<p>步骤3已经给出了思路和案例，说白了就是一个大段代表一个含义的情况下，优先按照大段进行拆分，尽量把同一个含义的数据拆分到一起。针对文章开头的案例数据，我们可以拆分成如下的格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\[%&#123;GREEDYDATA:time&#125;\] %&#123;GREEDYDATA:tag1&#125; %&#123;GREEDYDATA:tag2&#125; %&#123;GREEDYDATA:tag3&#125; %&#123;GREEDYDATA:day&#125; %&#123;GREEDYDATA:time&#125; \[%&#123;GREEDYDATA:thread&#125;\]-\[%&#123;GREEDYDATA:logLevel&#125;\]\[%&#123;GREEDYDATA:logType&#125;\]-%&#123;GREEDYDATA:logContent&#125;</span><br></pre></td></tr></table></figure>
+
+<p>grok表达式使用Kibana的Dev Tool 解析结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;logType&quot;</span>: <span class="string">&quot;RequestLog&quot;</span>,</span><br><span class="line">  <span class="string">&quot;tag1&quot;</span>: <span class="string">&quot;0000005a&quot;</span>,</span><br><span class="line">  <span class="string">&quot;logContent&quot;</span>: <span class="string">&quot;&#123;\&quot;currentUser\&quot;:\&quot;Default\&quot;,\&quot;httpMethod\&quot;:\&quot;GET\&quot;,\&quot;level\&quot;:\&quot;sys-biz\&quot;,\&quot;module\&quot;:\&quot;Order\&quot;,\&quot;reqInfo\&quot;:\&quot;-\&quot;,\&quot;reqSourceIp\&quot;:\&quot;0:0:0:0:0:0:0:1\&quot;,\&quot;reqTime\&quot;:\&quot;2021-09-03 10:55:32\&quot;,\&quot;reqUrl\&quot;:\&quot;/data/queryByPage\&quot;,\&quot;respInfo\&quot;:\&quot;&#123;\\\&quot;code\\\&quot;:\\\&quot;200\\\&quot;,\\\&quot;data\\\&quot;:&#123;\\\&quot;optimizeCountSql\\\&quot;:true,\\\&quot;records\\\&quot;:[&#123;\\\&quot;serialNumber\\\&quot;:\\\&quot;wmh2021060710348585\\\&quot;,\\\&quot;businessTypes\\\&quot;:\\\&quot;7\\\&quot;,\\\&quot;id\\\&quot;:11177&#125;,&#123;\\\&quot;serialNumber\\\&quot;:\\\&quot;wmh2021060710349253\\\&quot;,\\\&quot;businessTypes\\\&quot;:\\\&quot;2\\\&quot;,\\\&quot;id\\\&quot;:11178&#125;,&#123;\\\&quot;serialNumber\\\&quot;:\\\&quot;wmh2021060710350107\\\&quot;,\\\&quot;businessTypes\\\&quot;:\\\&quot;5\\\&quot;,\\\&quot;id\\\&quot;:11179&#125;,&#123;\\\&quot;serialNumber\\\&quot;:\\\&quot;wmh2021060810348855\\\&quot;,\\\&quot;businessTypes\\\&quot;:\\\&quot;2\\\&quot;,\\\&quot;id\\\&quot;:11180&#125;,&#123;\\\&quot;serialNumber\\\&quot;:\\\&quot;wmh2021060810348954\\\&quot;,\\\&quot;businessTypes\\\&quot;:\\\&quot;5\\\&quot;,\\\&quot;id\\\&quot;:11181&#125;],\\\&quot;searchCount\\\&quot;:true,\\\&quot;total\\\&quot;:5,\\\&quot;current\\\&quot;:1,\\\&quot;size\\\&quot;:10,\\\&quot;orders\\\&quot;:[]&#125;,\\\&quot;message\\\&quot;:\\\&quot;success\\\&quot;&#125;\&quot;,\&quot;respStatusCode\&quot;:200,\&quot;respTime\&quot;:\&quot;2021-09-03 10:55:32\&quot;,\&quot;tips\&quot;:\&quot;分页查询订单\&quot;&#125;&quot;</span>,</span><br><span class="line">  <span class="string">&quot;thread&quot;</span>: <span class="string">&quot;com.baidu.portal.utils.http.HttpUtil sendPostJson 846&quot;</span>,</span><br><span class="line">  <span class="string">&quot;tag2&quot;</span>: <span class="string">&quot;SystemOut&quot;</span>,</span><br><span class="line">  <span class="string">&quot;tag3&quot;</span>: <span class="string">&quot;O&quot;</span>,</span><br><span class="line">  <span class="string">&quot;logLevel&quot;</span>: <span class="string">&quot;INFO&quot;</span>,</span><br><span class="line">  <span class="string">&quot;time&quot;</span>: <span class="string">&quot;9/3/21 10:26:54:274 CST&quot;</span>,</span><br><span class="line">  <span class="string">&quot;day&quot;</span>: <span class="string">&quot;2021-09-03&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>通俗易懂，简单明了的就可以完成日志的分字段采集入库了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/elastic/">elastic</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09/03/%E8%81%8A%E8%81%8ALogstash%E7%9A%84%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE-liao-liao-logstash-de-chang-yong-pei-zhi/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">聊聊Logstash的常用配置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08/31/%E8%81%8A%E8%81%8AElasticsearch%20%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-liao-liao-elasticsearchchang-jian-wen-ti/">
+                        <span class="hidden-mobile">聊聊Elasticsearch 常见问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

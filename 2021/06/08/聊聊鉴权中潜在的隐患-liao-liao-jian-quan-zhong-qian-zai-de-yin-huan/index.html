@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="本文主要聊聊常见的鉴权缺陷，各位也可以集思广益，丰富案例场景。 场景一 会话数据安全性一个系统安全的核心，应该在于用户会话的生成环节。我们保障的系统安全，应该是基于用户会话不存在密码或验证码泄露(或网络监听)场景下的，否则常规的用户鉴权无法保障其安全性。我们此处聊的主要是常见的隐患以及可能的安全应对方案。 隐患一  用户会话可无认证生成在不需要用户输入密码或验证码的情况下，可以生成用户会话。例如，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊鉴权中潜在的隐患">
+<meta property="og:url" content="https://chinagoldline.github.io/2021/06/08/%E8%81%8A%E8%81%8A%E9%89%B4%E6%9D%83%E4%B8%AD%E6%BD%9C%E5%9C%A8%E7%9A%84%E9%9A%90%E6%82%A3-liao-liao-jian-quan-zhong-qian-zai-de-yin-huan/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="本文主要聊聊常见的鉴权缺陷，各位也可以集思广益，丰富案例场景。 场景一 会话数据安全性一个系统安全的核心，应该在于用户会话的生成环节。我们保障的系统安全，应该是基于用户会话不存在密码或验证码泄露(或网络监听)场景下的，否则常规的用户鉴权无法保障其安全性。我们此处聊的主要是常见的隐患以及可能的安全应对方案。 隐患一  用户会话可无认证生成在不需要用户输入密码或验证码的情况下，可以生成用户会话。例如，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-08T13:34:06.000Z">
+<meta property="article:modified_time" content="2021-09-12T02:28:56.037Z">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="web安全">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>聊聊鉴权中潜在的隐患 - 爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="聊聊鉴权中潜在的隐患">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-08 21:34" pubdate>
+        2021年6月8日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      undefined 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      NaN 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">聊聊鉴权中潜在的隐患</h1>
+            
+            <div class="markdown-body">
+              <p>本文主要聊聊常见的鉴权缺陷，各位也可以集思广益，丰富案例场景。</p>
+<h2 id="场景一-会话数据安全性"><a href="#场景一-会话数据安全性" class="headerlink" title="场景一 会话数据安全性"></a>场景一 会话数据安全性</h2><p>一个系统安全的核心，应该在于用户会话的生成环节。我们保障的系统安全，应该是基于用户会话不存在密码或验证码泄露(或网络监听)场景下的，否则常规的用户鉴权无法保障其安全性。我们此处聊的主要是常见的隐患以及可能的安全应对方案。</p>
+<h3 id="隐患一-用户会话可无认证生成"><a href="#隐患一-用户会话可无认证生成" class="headerlink" title="隐患一  用户会话可无认证生成"></a>隐患一  用户会话可无认证生成</h3><p>在不需要用户输入密码或验证码的情况下，可以生成用户会话。例如，调用特定API即可直接生成用户会话令牌。一般情况下，<strong>公网系统或者APP接口严禁使用此类型鉴权方案</strong>。</p>
+<p>对于内网系统，例如OA系统等有特定鉴权方案的系统，可以考虑如下加固方案：</p>
+<p>1）将对方服务器加入IP访问白名单</p>
+<p>2）采用双向鉴权方式，回调对方接口完成一次二次确认，二次确认成功后再生成用户会话</p>
+<h3 id="隐患二-用户身份可横向越权"><a href="#隐患二-用户身份可横向越权" class="headerlink" title="隐患二 用户身份可横向越权"></a>隐患二 用户身份可横向越权</h3><p>例如此时需要查询某个用户名下拥有的权益数据，此时有个API使用参数的形式来识别当前用户，但是如果此参数是一个ID或者手机号等，非法用户可以直接替换ID或手机号从而达到查询其他用户名下拥有的权益数据信息亦或者代替行权。</p>
+<p>对于需要获取当前用户信息的方法，均应使用会话方式获取当前用户信息。<strong>会话级用户数据，严禁使用传参形式传递给后端API。</strong></p>
+<h2 id="场景二-常规业务安全"><a href="#场景二-常规业务安全" class="headerlink" title="场景二 常规业务安全"></a>场景二 常规业务安全</h2><h3 id="隐患一-短信轰炸"><a href="#隐患一-短信轰炸" class="headerlink" title="隐患一  短信轰炸"></a>隐患一  短信轰炸</h3><p>一般情况下，现在短信服务提供商均提供了短信发送限流的服务。对于没有提供的，则需要自行注意。</p>
+<p>例如在用户注册等环节，用户在获取短信验证码时，可以采用如下方式进行限流：</p>
+<p>1）限制1分钟内单个账号的发送次数，限制1天内单个账号的发送次数</p>
+<p>2）对于特定时间内获取验证码超过阈值的，强制其输入图形验证码后方可再执行其他逻辑</p>
+<h3 id="隐患二-密码爆破"><a href="#隐患二-密码爆破" class="headerlink" title="隐患二  密码爆破"></a>隐患二  密码爆破</h3><p>一般情况下，对于明文传输的密码，或者加密密码均可使用特定工具对系统进行密码爆破攻击。</p>
+<p>对于密码爆破，最好的防御措施就是增加对用户账号锁定的逻辑，举例如下：</p>
+<p>1）用户在指定时间内登录失败次数大于3次，要求其输入图形验证码</p>
+<p>2）用户在指定时间内登录失败次数大于10次，锁定其账号1小时、</p>
+<h3 id="隐患三-用户密码弱口令"><a href="#隐患三-用户密码弱口令" class="headerlink" title="隐患三 用户密码弱口令"></a>隐患三 用户密码弱口令</h3><p>目前很多系统经过多轮整改，已经较少出现弱口令的情况。</p>
+<p>在系统建设之初，应该对用户口令进行复杂度校验(前后端均要)，推荐的密码复杂度如下：</p>
+<p>1）最小长度为8位及以上</p>
+<p>2）必须包含数字、大小写字、特殊符号三种类型</p>
+<p>3）不能包含例如qaz这样的键盘排序格式</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E7%99%BD%E8%AF%9D%E5%AE%89%E5%85%A8/">白话安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web%E5%AE%89%E5%85%A8/">web安全</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/06/09/Map%E6%8C%89Key%E6%88%96Value%E6%8E%92%E5%BA%8F-map-an-key-huo-value-pai-xu/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Map按Key或Value排序</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/08/Nginx%E9%9B%86%E6%88%90GeoIP2%E6%A8%A1%E5%9D%97%E5%AE%9E%E7%8E%B0%E5%9C%B0%E5%8C%BA%E8%AF%86%E5%88%AB%E4%B8%8E%E5%B1%8F%E8%94%BD-nginx-ji-cheng-geoip2-mo-kuai-shi-xian-de-qu-shi-bie-yu-ping-bi/">
+                        <span class="hidden-mobile">Nginx集成GeoIP2模块实现地区识别与屏蔽</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

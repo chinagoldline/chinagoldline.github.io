@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="基本概念缓存存储1234567Pragma : no-cache  http1.0时期的属性  为了兼容会使用Expires：0  http1.0时期的属性 Cache-Control  http1.1 中加入的新属性，它有以下常用参数：   Public&#x2F;Private 私有缓存&#x2F;共有缓存   no-cache：不建议使用本地缓存，但仍然会缓存到本地   no-store：不会在客户端缓存任何数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊浏览器缓存（Cache-Control、max-age和Expires、Etag和Last-Modified）">
+<meta property="og:url" content="https://chinagoldline.github.io/2021/08/17/%E8%81%8A%E8%81%8A%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%EF%BC%88Cache-Control%E3%80%81max-age%E5%92%8CExpires%E3%80%81Etag%E5%92%8CLast-Modified%EF%BC%89-liao-liao-liu-lan-qi-huan-cun-cache-controlmax-age-he-expiresetag-he-last-modified/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="基本概念缓存存储1234567Pragma : no-cache  http1.0时期的属性  为了兼容会使用Expires：0  http1.0时期的属性 Cache-Control  http1.1 中加入的新属性，它有以下常用参数：   Public&#x2F;Private 私有缓存&#x2F;共有缓存   no-cache：不建议使用本地缓存，但仍然会缓存到本地   no-store：不会在客户端缓存任何数">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-17T13:32:33.000Z">
+<meta property="article:modified_time" content="2021-09-03T08:50:41.146Z">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="web缓存">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>聊聊浏览器缓存（Cache-Control、max-age和Expires、Etag和Last-Modified） - 爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="聊聊浏览器缓存（Cache-Control、max-age和Expires、Etag和Last-Modified）">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-17 21:32" pubdate>
+        2021年8月17日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      undefined 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      NaN 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">聊聊浏览器缓存（Cache-Control、max-age和Expires、Etag和Last-Modified）</h1>
+            
+            <div class="markdown-body">
+              <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="缓存存储"><a href="#缓存存储" class="headerlink" title="缓存存储"></a>缓存存储</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Pragma : no-cache  http1<span class="number">.0</span>时期的属性  为了兼容会使用</span><br><span class="line">Expires：<span class="number">0</span>  http1<span class="number">.0</span>时期的属性 </span><br><span class="line">Cache-Control  http1<span class="number">.1</span> 中加入的新属性，它有以下常用参数：</span><br><span class="line">   Public/Private 私有缓存/共有缓存</span><br><span class="line">   no-cache：不建议使用本地缓存，但仍然会缓存到本地</span><br><span class="line">   no-store：不会在客户端缓存任何数据</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>max-age：比较特殊，是一个混合属性，替代了Expires的过期时间</p>
+<p>举个栗子：如果要设置客户端不缓存，并兼容http1.0的方式可以这样写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Pragma : no-cache </span><br><span class="line">Expires：<span class="number">0</span></span><br><span class="line">Cache-Control：no-store</span><br></pre></td></tr></table></figure>
+
+<p>等价于</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Pragma : no-cache  <span class="comment">// Pragma为了兼容http1.0</span></span><br><span class="line">Cache-Control：max-age=<span class="number">0</span>  <span class="comment">// 去掉了Expires属性（下面名词解释会说到为什么被去掉），合并到max-age中，</span></span><br></pre></td></tr></table></figure>
+
+<p>名词解释：<br><strong>私有缓存</strong>：《HTTP权威指南》里面讲到了私有缓存的一种就是在浏览器里面输入  about:cache  可以查看自己浏览器缓存的内容，会给出一个显示了缓存内容“磁盘缓存统计”页面，这个可以看看还挺有意思，能展示不少信息<br><strong>Expires</strong>：过时期限值，GMT格式，是Web服务器响应消息头字段，在响应http请求时告诉浏览器在过期时间前浏览器可以直接从浏览器缓存取数据，而无需再次请求。不过Expires 是HTTP 1.0的东西，现在默认浏览器均默认使用HTTP 1.1，所以它的作用基本忽略。Expires 的一个缺点就是，返回的到期时间是服务器端的时间，这样存在一个问题，如果客户端的时间与服务器的时间相差很大（比如时钟不同步，或者跨时区），那么误差就很大，所以在HTTP 1.1版开始，使用Cache-Control: max-age=秒替代。</p>
+<h2 id="缓存对比"><a href="#缓存对比" class="headerlink" title="缓存对比"></a>缓存对比</h2><ul>
+<li>Last-Modified<br>http1.0时期属性  现在仍在使用</li>
+<li>ETag（Entity Tag）<br>http1.1时期新加属性 ，使用inode+mtime（以下有解释）来计算。根据实体内容生成的一段hash字符串（类似于MD5或者SHA1之后的结果），可以标识资源的状态。 当资源发送改变时，ETag也随之发生变化。</li>
+</ul>
+<p>名词解释：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">inode ：包含文件的元信息，包括以下内容</span><br><span class="line">文件的字节数、文件拥有者的User ID、文件的Group ID</span><br><span class="line">文件的读、写、执行权限</span><br><span class="line">文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文&gt;件内容上一次变动的时间，atime指文件上一次打开的时间。</span><br><span class="line">链接数，即有多少文件名指向这个inode、 文件数据block的位置</span><br><span class="line">mtime：指文件内容上一次变动的时间</span><br></pre></td></tr></table></figure>
+
+<h3 id="为什么用http1-1新推出了ETag"><a href="#为什么用http1-1新推出了ETag" class="headerlink" title="为什么用http1.1新推出了ETag"></a>为什么用http1.1新推出了ETag</h3><p>某些服务器不能精确得到文件的最后修改时间， 这样就无法通过最后修改时间来判断文件是否更新了。<br>某些文件的修改非常频繁，在秒以下的时间内进行修改. Last-Modified只能精确到秒。<br>一些文件的最后修改时间改变了，但是内容并未改变。 我们不希望客户端认为这个文件修改了。</p>
+<h3 id="ETag有哪些问题"><a href="#ETag有哪些问题" class="headerlink" title="ETag有哪些问题"></a>ETag有哪些问题</h3><p>ETag也有他自己的问题，所以经常在使用中会关闭ETag。举例来说，同一个文件在不同物理机上的inode是不同的，这就导致了在分布式的Web系统中，当访问落在不同的物理机上时会返回不同的ETag，进而导致304失效，降级为200请求。解决办法也有从ETag算法中剥离inode，只是使用mtime，但是这样实际上和Last-Modified就一样了。当然你也可以额外的做一些改进，使ETag对静态资源的算法也是通过hash计算的。不过由于一般我们会使用CDN技术，因此集群部署中的ETag问题并不会造成太大的影响，所以折腾的人也不太是很多。  参考：这篇文章hefangshi同学的回答</p>
+<h1 id="命中缓存速度对比"><a href="#命中缓存速度对比" class="headerlink" title="命中缓存速度对比"></a>命中缓存速度对比</h1><h2 id="缓存命中速度"><a href="#缓存命中速度" class="headerlink" title="缓存命中速度"></a>缓存命中速度</h2><p>缓存命中 &gt; 缓存再验证成功 &gt; 缓存未命中 = 缓存再验证失败；</p>
+<h3 id="缓存命中优先级"><a href="#缓存命中优先级" class="headerlink" title="缓存命中优先级"></a>缓存命中优先级</h3><p>Cache-Control http1.1 &gt; Expires &gt; Pragma http1.0来决定是否 (200 from cache)</p>
+<h3 id="缓存再验证成功"><a href="#缓存再验证成功" class="headerlink" title="缓存再验证成功"></a>缓存再验证成功</h3><p>根据Last-Modified http1.0 和 ETaghttp1.1 来验证是否返回 (304 Not Modified) 两者都有，就必须同时验证，并且两者都满足才会返回304；<br>服务端响应头 Last-Modified 与 客户端请求头 If-Modified-Since 对应<br>服务端响应头 ETag 与 客户端请求头 If-None-Match</p>
+<h1 id="200-from-cache-vs-304-Not-Modified"><a href="#200-from-cache-vs-304-Not-Modified" class="headerlink" title="200 from cache vs 304 Not Modified"></a>200 from cache vs 304 Not Modified</h1><p>为什么有时候明明命中了缓存，控制台中Status显示的不是 200 from cache ？原来是浏览器的原因：</p>
+<ul>
+<li><p>触发 200 from cache：<br>直接点击链接访问<br>输入网址按回车访问<br>二维码扫描</p>
+</li>
+<li><p>触发 304 Not Modified：<br>刷新页面时触发<br>设置了长缓存、但 Entity Tags 没有移除时触发<br>二者怎么选择<br>毫无疑问选择可以尽量多的命中缓存，然后靠更新静态文件的版本号来使缓存失效。关于版本号建议使用 file.xxx.js 的形式而不是 file.js?v=xxx。</p>
+</li>
+</ul>
+<p>可以看这两篇文章有讲述原因：<br><a target="_blank" rel="noopener" href="https://developer.yahoo.com/performance/rules.html#expires=">Best Practices for Speeding Up Your Web Site</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20790576">大公司里怎样开发和部署前端代码？</a></p>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>在研究缓存问题的时候，知乎上看到这个问题：静态资源（JS/CSS）存储在localStorage有什么缺点？为什么没有被广泛应用？ ，看了大神们的答案主要是维护成本实在过高，如果真的速度超快，这点可以忽略，值得花时间研究，但是如果读取再执行的速度可能会比浏览器直接304性能要低，就完全没有必要使用这种方式了。</p>
+<h1 id="基于Spring-Boot-的图片缓存使用样例"><a href="#基于Spring-Boot-的图片缓存使用样例" class="headerlink" title="基于Spring Boot 的图片缓存使用样例"></a>基于Spring Boot 的图片缓存使用样例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 获取指定图片</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> fileName</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@GetMapping(&quot;/io/&#123;fileName&#125;&quot;)</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> ResponseEntity  <span class="title">io</span><span class="params">(<span class="meta">@PathVariable</span> String fileName)</span></span>&#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         System.out.println(fileName);</span><br><span class="line">         CacheControl cacheControl = CacheControl.maxAge(<span class="number">30</span>, TimeUnit.MINUTES);</span><br><span class="line">         HttpHeaders headers = <span class="keyword">new</span> HttpHeaders();</span><br><span class="line">         headers.set(<span class="string">&quot;Content-Type&quot;</span>,<span class="string">&quot;image/jpg&quot;</span>);</span><br><span class="line">         String filePath=<span class="string">&quot;/img/&quot;</span>;</span><br><span class="line">         <span class="keyword">return</span> ResponseEntity.ok()</span><br><span class="line">                 .cacheControl(cacheControl)</span><br><span class="line">                 .headers(headers)</span><br><span class="line">                 .body(FileUtil.readBytes((filePath+fileName )));</span><br><span class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">         <span class="keyword">return</span> ResponseEntity.notFound().build();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>本文大部分转载自：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000008277022">http缓存深入研究，200 from cache or 304 not modified？</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B8%B8%E7%94%A8Tools/">常用Tools</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web%E7%BC%93%E5%AD%98/">web缓存</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08/25/Nmap%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4-nmap%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Nmap常用命令</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/07/24/Linux%E9%80%9A%E8%BF%87%E5%AE%89%E8%A3%85davfs2%E6%9D%A5%E6%8C%82%E8%BD%BDwebdav%E7%BD%91%E7%9B%98-linux-tong-guo-an-zhuang-davfs2-lai-gua-zai-webdav-wang-pan/">
+                        <span class="hidden-mobile">Linux通过安装davfs2来挂载webdav网盘</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="用技术助力梦想，奋起吧，骚年们~爱旅行的攻城狮">
+  <meta name="author" content="爱旅行的攻城狮">
+  <meta name="keywords" content="Java,web,redis,安全,devops">
+  <meta name="description" content="Mysql datetime 类型简介A DATETIME or TIMESTAMP value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用JDK8 LocalDateTime查询Mysql datetime类型字段精度问题">
+<meta property="og:url" content="https://chinagoldline.github.io/2021/10/21/%E4%BD%BF%E7%94%A8JDK8%20LocalDateTime%E6%9F%A5%E8%AF%A2Mysql%20datetime%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98-%E4%BD%BF%E7%94%A8jdk8localdatetime%E6%9F%A5%E8%AF%A2mysqldatetime%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="爱旅行的攻城狮">
+<meta property="og:description" content="Mysql datetime 类型简介A DATETIME or TIMESTAMP value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-21T13:46:44.000Z">
+<meta property="article:modified_time" content="2021-10-21T03:00:12.539Z">
+<meta property="article:author" content="爱旅行的攻城狮">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>使用JDK8 LocalDateTime查询Mysql datetime类型字段精度问题 - 爱旅行的攻城狮</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"chinagoldline.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>爱旅行的攻城狮</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/me">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="使用JDK8 LocalDateTime查询Mysql datetime类型字段精度问题">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-21 21:46" pubdate>
+        2021年10月21日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      undefined 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      NaN 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用JDK8 LocalDateTime查询Mysql datetime类型字段精度问题</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Mysql-datetime-类型简介"><a href="#Mysql-datetime-类型简介" class="headerlink" title="Mysql datetime 类型简介"></a>Mysql datetime 类型简介</h1><p>A DATETIME or TIMESTAMP value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into a DATETIME or TIMESTAMP column is stored rather than discarded. With the fractional part included, the format for these values is ‘YYYY-MM-DD hh:mm:ss[.fraction]’, the range for DATETIME values is ‘1000-01-01 00:00:00.000000’ to ‘9999-12-31 23:59:59.999999’, and the range for TIMESTAMP values is ‘1970-01-01 00:00:01.000000’ to ‘2038-01-19 03:14:07.999999’. The fractional part should always be separated from the rest of the time by a decimal point; no other fractional seconds delimiter is recognized.<br>原文地址：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html">https://dev.mysql.com/doc/refman/5.7/en/datetime.html</a><br>从Mysql官方介绍看，datetime类型的字段默认的精度为微秒，也就是小数点后有6位数。</p>
+<h1 id="一个神奇的Bug"><a href="#一个神奇的Bug" class="headerlink" title="一个神奇的Bug"></a>一个神奇的Bug</h1><p>请看下面这段SQL，这个SQL的start_time 和end_time 的值取的LocalDateTime类型的值作为入参。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">*</span><br><span class="line">FROM</span><br><span class="line">	table1</span><br><span class="line">WHERE</span><br><span class="line">	deleted = <span class="number">0</span></span><br><span class="line">AND start_time &gt;= <span class="string">&#x27;2020-04-12T23:59:59.999999998&#x27;</span></span><br><span class="line">AND end_time &lt;= <span class="string">&#x27; 2020-04-19T23:59:59.999999998&#x27;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>执行结果，你会发现一个神奇的问题，那就是end_time 为2020-04-20T00:00:00的数据也被搜索出来了。<br>如果你的搜索对秒这个数据不敏感，那么没什么影响。<br>但是如果你的搜索对秒有严格要求，那此处就是Bug了。<br><strong>这是为什么呢？</strong><br>因为Mysql在执行的时候对纳秒数据也就是998 进行了四舍五入，四舍五入以后<br>在执行的时候，实际时间就变成了：2020-04-20T00:00:00</p>
+<h1 id="修复查询或入库时间Bug"><a href="#修复查询或入库时间Bug" class="headerlink" title="修复查询或入库时间Bug"></a>修复查询或入库时间Bug</h1><p>在最后一步进行参数设置时，比如获取当前时间，可以使用<br>下面的API强制设置纳秒为0，示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LocalDateTime dateTime=LocalDateTime.now().withNano(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>注：LocalDateTime 的时间精度是默认到纳秒的，完美可以四舍五入提前多拿到1秒时间。</strong></p>
+<h1 id="LocalDateTime简介"><a href="#LocalDateTime简介" class="headerlink" title="LocalDateTime简介"></a>LocalDateTime简介</h1><p>JDK8新特性里提供了3个时间类：LocalDate、LocalTime、LocalDateTime</p>
+<p>在项目开发中，已经需要对Date类型进行格式，否则可读性很差，格式化Date类型要使用SimpleDateFormat，但SimpleDateFormat是现成不安全的。</p>
+<h2 id="为什么需要LocalDate、LocalTime、LocalDateTime"><a href="#为什么需要LocalDate、LocalTime、LocalDateTime" class="headerlink" title="为什么需要LocalDate、LocalTime、LocalDateTime"></a>为什么需要LocalDate、LocalTime、LocalDateTime</h2><h3 id="Date如果不格式化，打印出的日期可读性差"><a href="#Date如果不格式化，打印出的日期可读性差" class="headerlink" title="Date如果不格式化，打印出的日期可读性差"></a>Date如果不格式化，打印出的日期可读性差</h3><p>Tue Sep 10 09:34:04 CST 2019</p>
+<h3 id="使用SimpleDateFormat对时间进行格式化，但SimpleDateFormat是线程不安全的。SimpleDateFormat的format方法最终调用代码："><a href="#使用SimpleDateFormat对时间进行格式化，但SimpleDateFormat是线程不安全的。SimpleDateFormat的format方法最终调用代码：" class="headerlink" title="使用SimpleDateFormat对时间进行格式化，但SimpleDateFormat是线程不安全的。SimpleDateFormat的format方法最终调用代码："></a>使用SimpleDateFormat对时间进行格式化，但SimpleDateFormat是线程不安全的。SimpleDateFormat的format方法最终调用代码：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> StringBuffer <span class="title">format</span><span class="params">(Date date, StringBuffer toAppendTo, FieldDelegate delegate)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Convert input date to time field list</span></span><br><span class="line">        calendar.setTime(date);</span><br><span class="line">        <span class="keyword">boolean</span> useDateFormatSymbols = useDateFormatSymbols();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; compiledPattern.length; ) &#123;</span><br><span class="line">            <span class="keyword">int</span> tag = compiledPattern[i] &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">            <span class="keyword">int</span> count = compiledPattern[i++] &amp; <span class="number">0xff</span>;</span><br><span class="line">            <span class="keyword">if</span> (count == <span class="number">255</span>) &#123;</span><br><span class="line">                count = compiledPattern[i++] &lt;&lt; <span class="number">16</span>;</span><br><span class="line">                count |= compiledPattern[i++];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">switch</span> (tag) &#123;</span><br><span class="line">                <span class="keyword">case</span> TAG_QUOTE_ASCII_CHAR:</span><br><span class="line">                    toAppendTo.append((<span class="keyword">char</span>) count);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> TAG_QUOTE_CHARS:</span><br><span class="line">                    toAppendTo.append(compiledPattern, i, count);</span><br><span class="line">                    i += count;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    subFormat(tag, count, delegate, toAppendTo, useDateFormatSymbols);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> toAppendTo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>calendar是共享变量，并且这个共享变量没有做线程安全控制。当多个线程同时使用相同的SimpleDateFormat对象【如用static修饰的SimpleDateFormat】调用format方法时，多个线程会同时调用calendar.setTime方法，可能一个线程刚设置好time值 另外的一个线程马上把设置的time值给修改了导致返回的格式化时间可能是错误的。</p>
+<p>　　在多并发情况下使用SimpleDateFormat需格外注意 SimpleDateFormat除了format是线程不安全以外，parse方法也是线程不安全的。parse方法实际调用alb.establish(calendar).getTime()方法来解析，alb.establish(calendar)方法里主要完成了</p>
+<p>　　a、重置日期对象cal的属性值</p>
+<p>　　b、使用calb中中属性设置cal</p>
+<p>　　c、返回设置好的cal对象</p>
+<p>　　但是这三步不是原子操作。</p>
+<p>　　多线程并发如何保证线程安全 - 避免线程之间共享一个SimpleDateFormat对象，每个线程使用时都创建一次SimpleDateFormat对象 =&gt; 创建和销毁对象的开销大 - 对使用format和parse方法的地方进行加锁 =&gt; 线程阻塞性能差 - 使用ThreadLocal保证每个线程最多只创建一次SimpleDateFormat对象 =&gt; 较好的方法。Date对时间处理比较麻烦，比如想获取某年、某月、某星期，以及n天以后的时间，如果用Date来处理的话真是太难了，你可能会说Date类不是有getYear、getMonth这些方法吗，获取年月日很Easy，但都被弃用了。</p>
+<p>　　</p>
+<h2 id="Java8全新的日期和时间API"><a href="#Java8全新的日期和时间API" class="headerlink" title="Java8全新的日期和时间API"></a>Java8全新的日期和时间API</h2><h3 id="LocalDate"><a href="#LocalDate" class="headerlink" title="LocalDate"></a>LocalDate</h3><p>　　LocalDate是日期处理类，具体API如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取当前日期</span></span><br><span class="line">LocalDate now = LocalDate.now();</span><br><span class="line"><span class="comment">// 设置日期</span></span><br><span class="line">LocalDate localDate = LocalDate.of(<span class="number">2019</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// 获取年</span></span><br><span class="line"><span class="keyword">int</span> year = localDate.getYear();     <span class="comment">//结果：2019</span></span><br><span class="line"><span class="keyword">int</span> year1 = localDate.get(ChronoField.YEAR); <span class="comment">//结果：2019</span></span><br><span class="line"><span class="comment">// 获取月</span></span><br><span class="line">Month month = localDate.getMonth();   <span class="comment">// 结果：SEPTEMBER</span></span><br><span class="line"><span class="keyword">int</span> month1 = localDate.get(ChronoField.MONTH_OF_YEAR); <span class="comment">//结果：9</span></span><br><span class="line"><span class="comment">// 获取日</span></span><br><span class="line"><span class="keyword">int</span> day = localDate.getDayOfMonth();   <span class="comment">//结果：10</span></span><br><span class="line"><span class="keyword">int</span> day1 = localDate.get(ChronoField.DAY_OF_MONTH); <span class="comment">// 结果：10</span></span><br><span class="line"><span class="comment">// 获取星期</span></span><br><span class="line">DayOfWeek dayOfWeek = localDate.getDayOfWeek();   <span class="comment">//结果：TUESDAY</span></span><br><span class="line"><span class="keyword">int</span> dayOfWeek1 = localDate.get(ChronoField.DAY_OF_WEEK); <span class="comment">//结果：2</span></span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="LocalTime"><a href="#LocalTime" class="headerlink" title="LocalTime"></a>LocalTime</h3><p>　　LocalTime是时间处理类，具体API如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取当前时间</span></span><br><span class="line">LocalTime now = LocalTime.now();</span><br><span class="line"><span class="comment">// 设置时间</span></span><br><span class="line">LocalTime localTime = LocalTime.of(<span class="number">13</span>, <span class="number">51</span>, <span class="number">10</span>);</span><br><span class="line"><span class="comment">//获取小时</span></span><br><span class="line"><span class="keyword">int</span> hour = localTime.getHour();    <span class="comment">// 结果：13</span></span><br><span class="line"><span class="keyword">int</span> hour1 = localTime.get(ChronoField.HOUR_OF_DAY); <span class="comment">// 结果：13</span></span><br><span class="line"><span class="comment">//获取分</span></span><br><span class="line"><span class="keyword">int</span> minute = localTime.getMinute();  <span class="comment">// 结果：51</span></span><br><span class="line"><span class="keyword">int</span> minute1 = localTime.get(ChronoField.MINUTE_OF_HOUR); <span class="comment">// 结果：51</span></span><br><span class="line"><span class="comment">//获取秒</span></span><br><span class="line"><span class="keyword">int</span> second = localTime.getSecond();   <span class="comment">// 结果：10</span></span><br><span class="line"><span class="keyword">int</span> second1 = localTime.get(ChronoField.SECOND_OF_MINUTE); <span class="comment">// 结果：10</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="LocalDateTime"><a href="#LocalDateTime" class="headerlink" title="LocalDateTime"></a>LocalDateTime</h3><p>　　LocalDateTime可以设置年月日时分秒，相当于LocalDate + LocalTime</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取当前日期时间</span></span><br><span class="line">LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line"><span class="comment">// 设置日期</span></span><br><span class="line">LocalDateTime localDateTime1 = LocalDateTime.of(<span class="number">2019</span>, Month.SEPTEMBER, <span class="number">10</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">56</span>);</span><br><span class="line">LocalDateTime localDateTime2 = LocalDateTime.of(localDate, localTime);</span><br><span class="line">LocalDateTime localDateTime3 = localDate.atTime(localTime);</span><br><span class="line">LocalDateTime localDateTime4 = localTime.atDate(localDate);</span><br><span class="line"><span class="comment">// 获取LocalDate</span></span><br><span class="line">LocalDate localDate2 = localDateTime.toLocalDate();</span><br><span class="line"><span class="comment">// 获取LocalTime</span></span><br><span class="line">LocalTime localTime2 = localDateTime.toLocalTime();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Instant"><a href="#Instant" class="headerlink" title="Instant"></a>Instant</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建Instant对象</span></span><br><span class="line">Instant instant = Instant.now();</span><br><span class="line"><span class="comment">// 获取秒</span></span><br><span class="line"><span class="keyword">long</span> currentSecond = instant.getEpochSecond();</span><br><span class="line"><span class="comment">// 获取毫秒</span></span><br><span class="line"><span class="keyword">long</span> currentMilli = instant.toEpochMilli();</span><br><span class="line">　　如果只是为了获取秒数或者毫秒数，使用System.currentTimeMillis()来得更为方便</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="修改LocalDate、LocalTime、LocalDateTime、Instant"><a href="#修改LocalDate、LocalTime、LocalDateTime、Instant" class="headerlink" title="修改LocalDate、LocalTime、LocalDateTime、Instant"></a>修改LocalDate、LocalTime、LocalDateTime、Instant</h2><p>　　LocalDate、LocalTime、LocalDateTime、Instant为不可变对象，修改这些对象对象会返回一个副本。增加、减少年数、月数、天数等 以LocalDateTime为例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建日期：2019-09-10 14:46:56</span></span><br><span class="line">LocalDateTime localDateTime = LocalDateTime.of(<span class="number">2019</span>, Month.SEPTEMBER, <span class="number">10</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">56</span>);</span><br><span class="line"><span class="comment">//增加一年</span></span><br><span class="line">localDateTime = localDateTime.plusYears(<span class="number">1</span>);  <span class="comment">//结果： 2020-09-10 14:46:56</span></span><br><span class="line">localDateTime = localDateTime.plus(<span class="number">1</span>, ChronoUnit.YEARS); <span class="comment">//结果： 2021-09-10 14:46:56</span></span><br><span class="line"><span class="comment">//减少一个月</span></span><br><span class="line">localDateTime = localDateTime.minusMonths(<span class="number">1</span>);  <span class="comment">//结果： 2021-08-10 14:46:56</span></span><br><span class="line">localDateTime = localDateTime.minus(<span class="number">1</span>, ChronoUnit.MONTHS); <span class="comment">//结果： 2021-07-10 14:46:56</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>　　通过with修改某些值，年月日时分秒都可以通过with方法设置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//修改年为2019</span></span><br><span class="line">localDateTime = localDateTime.withYear(<span class="number">2020</span>);</span><br><span class="line"><span class="comment">//修改为2022</span></span><br><span class="line">localDateTime = localDateTime.with(ChronoField.YEAR, <span class="number">2022</span>);</span><br></pre></td></tr></table></figure>
+
+<p>　　日期计算。比如有些时候想知道这个月的最后一天是几号、下个周末是几号，通过提供的时间和日期API可以很快得到答案 。TemporalAdjusters提供的各种日期时间格式化的静态类，比如firstDayOfYear是当前日期所属年的第一天</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LocalDate localDate = LocalDate.now();</span><br><span class="line">LocalDate localDate1 = localDate.with(TemporalAdjusters.firstDayOfYear());</span><br></pre></td></tr></table></figure>
+<p> 　　格式化时间。DateTimeFormatter默认提供了多种格式化方式，如果默认提供的不能满足要求，可以通过DateTimeFormatter的ofPattern方法创建自定义格式化方式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LocalDate localDate = LocalDate.of(<span class="number">2019</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br><span class="line">String s1 = localDate.format(DateTimeFormatter.BASIC_ISO_DATE);</span><br><span class="line">String s2 = localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);</span><br><span class="line"><span class="comment">//自定义格式化</span></span><br><span class="line">DateTimeFormatter dateTimeFormatter =   DateTimeFormatter.ofPattern(<span class="string">&quot;dd/MM/yyyy&quot;</span>);</span><br><span class="line">String s3 = localDate.format(dateTimeFormatter);</span><br></pre></td></tr></table></figure>
+<p>　　解析时间。和SimpleDateFormat相比，DateTimeFormatter是线程安全的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LocalDate localDate1 = LocalDate.parse(<span class="string">&quot;20190910&quot;</span>, DateTimeFormatter.BASIC_ISO_DATE);</span><br><span class="line">LocalDate localDate2 = LocalDate.parse(<span class="string">&quot;2019-09-10&quot;</span>, DateTimeFormatter.ISO_LOCAL_DATE);</span><br></pre></td></tr></table></figure>
+<p>　　Date与LocalDateTime转换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * LocalDateTime转毫秒时间戳</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> localDateTime LocalDateTime</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> 时间戳</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title">localDateTimeToTimestamp</span><span class="params">(LocalDateTime localDateTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        ZoneId zoneId = ZoneId.systemDefault();</span><br><span class="line">        Instant instant = localDateTime.atZone(zoneId).toInstant();</span><br><span class="line">        <span class="keyword">return</span> instant.toEpochMilli();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 时间戳转LocalDateTime</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> timestamp 时间戳</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> LocalDateTime</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title">timestampToLocalDateTime</span><span class="params">(<span class="keyword">long</span> timestamp)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Instant instant = Instant.ofEpochMilli(timestamp);</span><br><span class="line">        ZoneId zone = ZoneId.systemDefault();</span><br><span class="line">        <span class="keyword">return</span> LocalDateTime.ofInstant(instant, zone);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Date转LocalDateTime</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> date Date</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> LocalDateTime</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title">dateToLocalDateTime</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Instant instant = date.toInstant();</span><br><span class="line">        ZoneId zoneId = ZoneId.systemDefault();</span><br><span class="line">        <span class="keyword">return</span> instant.atZone(zoneId).toLocalDateTime();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * LocalDateTime转Date</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> localDateTime LocalDateTime</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Date</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">localDateTimeToDate</span><span class="params">(LocalDateTime localDateTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        ZoneId zoneId = ZoneId.systemDefault();</span><br><span class="line">        ZonedDateTime zdt = localDateTime.atZone(zoneId);</span><br><span class="line">        <span class="keyword">return</span> Date.from(zdt.toInstant());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/mysql/">mysql</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/14/Redis6.x%E6%96%B0%E7%89%B9%E6%80%A7%E4%B9%8BACL%E7%94%A8%E6%88%B7%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5-redis6x%E6%96%B0%E7%89%B9%E6%80%A7%E4%B9%8Bacl%E7%94%A8%E6%88%B7%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/">
+                        <span class="hidden-mobile">Redis6.x新特性之ACL用户安全策略</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://www.mycitymemory.com/" target="_blank" rel="nofollow noopener"><span>爱旅行的攻城狮</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
